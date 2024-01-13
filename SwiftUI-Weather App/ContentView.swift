@@ -22,6 +22,7 @@ private let weatherArray: [WeatherInfo] = [
     WeatherInfo(weekDay: "SAT", icon: "moon.stars.fill", temp: "+14°C"),
 ]
 
+// Представление для иконок
 private struct WeatherIconView: View {
     let iconName: String
     let width: CGFloat
@@ -36,6 +37,7 @@ private struct WeatherIconView: View {
     }
 }
 
+// Представление для текстов
 private struct TextView: View {
     let text: String
     let fontSize: CGFloat
@@ -52,34 +54,59 @@ private struct TextView: View {
     }
 }
 
+// Представление дня недели
+private struct WeatherDayView: View {
+    let weatherInfo: WeatherInfo
+    
+    var body: some View {
+        VStack {
+            TextView(text: weatherInfo.weekDay)
+            WeatherIconView(iconName: weatherInfo.icon,
+                            width: 40,
+                            height: 40)
+            TextView(text: weatherInfo.temp)
+        }
+    }
+}
+
+// Представление для фона
+private struct BackgroundView: View {
+    let topColor: Color
+    let bottomColor: Color
+    
+    var body: some View {
+        LinearGradient(gradient: Gradient(colors: [topColor, bottomColor]),
+                       startPoint: .topLeading,
+                       endPoint: .bottomTrailing)
+        .edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
+    }
+}
+
 struct ContentView: View {
     var body: some View {
         ZStack {
-            LinearGradient(gradient: Gradient(colors: [.blue, .white]), startPoint: .topLeading, endPoint: .bottomTrailing)
-                .edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
+            BackgroundView(topColor: .blue, bottomColor: Color("lightBlue"))
             
             VStack {
-                Text("Cupertino, CA")
-                    .font(.system(size: 32, weight: .medium, design: .default))
-                    .foregroundColor(.white)
+                TextView(text: "Cupertino, CA", fontSize: 32)
+                
                 VStack(spacing: 10) {
                     WeatherIconView(iconName: weatherArray[0].icon, width: 180, height: 180)
-                    
                     TextView(text: weatherArray[0].temp, fontSize: 70)
                 }
+                .padding(.bottom, 40)
                 
-                HStack(spacing: 10) {
+                HStack(spacing: 20) {
                     ForEach(weatherArray) { weatherInfo in
-                        VStack {
-                            TextView(text: weatherInfo.weekDay)
-                            
-                            WeatherIconView(iconName: weatherInfo.icon, width: 40, height: 40)
-                            
-                            TextView(text: weatherInfo.temp)
-                        }
+                        WeatherDayView(weatherInfo: weatherInfo)
                     }
                 }
-                .padding(.top)
+                
+                Spacer()
+                
+                ButtonView(label: "Change Day Time",
+                           textColor: .blue,
+                           backgroundColor: .white)
                 
                 Spacer()
             }
