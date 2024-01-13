@@ -7,9 +7,54 @@
 
 import SwiftUI
 
+private struct WeatherInfo: Identifiable {
+    var id: String { weekDay }
+    let weekDay: String
+    let icon: String
+    let temp: String
+}
+
+private let weatherArray: [WeatherInfo] = [
+    WeatherInfo(weekDay: "TUE", icon: "cloud.sun.fill", temp: "+20°C"),
+    WeatherInfo(weekDay: "WED", icon: "sun.max.fill", temp: "+25°C"),
+    WeatherInfo(weekDay: "THU", icon: "wind", temp: "+15°C"),
+    WeatherInfo(weekDay: "FRI", icon: "sunset.fill", temp: "+15°C"),
+    WeatherInfo(weekDay: "SAT", icon: "moon.stars.fill", temp: "+14°C"),
+]
+
+private struct WeatherIconView: View {
+    let iconName: String
+    let width: CGFloat
+    let height: CGFloat
+    
+    var body: some View {
+        Image(systemName: iconName)
+            .renderingMode(.original)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: width, height: height)
+    }
+}
+
+private struct TextView: View {
+    let text: String
+    let fontSize: CGFloat
+    
+    init(text: String, fontSize: CGFloat = 16) {
+        self.text = text
+        self.fontSize = fontSize
+    }
+    
+    var body: some View {
+        Text(text)
+            .font(.system(size: fontSize, weight: .medium))
+            .foregroundColor(.white)
+    }
+}
+
 struct ContentView: View {
     var body: some View {
-        ZStack{
+        ZStack {
             LinearGradient(gradient: Gradient(colors: [.blue, .white]), startPoint: .topLeading, endPoint: .bottomTrailing)
                 .edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
             
@@ -18,16 +63,24 @@ struct ContentView: View {
                     .font(.system(size: 32, weight: .medium, design: .default))
                     .foregroundColor(.white)
                 VStack(spacing: 10) {
-                    Image(systemName: "cloud.sun.fill")
-                        .renderingMode(.original)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 180, height: 180)
+                    WeatherIconView(iconName: weatherArray[0].icon, width: 180, height: 180)
                     
-                    Text("+25°C")
-                        .font(.system(size: 70, weight: .medium))
-                        .foregroundColor(.white)
+                    TextView(text: weatherArray[0].temp, fontSize: 70)
                 }
+                
+                HStack(spacing: 10) {
+                    ForEach(weatherArray) { weatherInfo in
+                        VStack {
+                            TextView(text: weatherInfo.weekDay)
+                            
+                            WeatherIconView(iconName: weatherInfo.icon, width: 40, height: 40)
+                            
+                            TextView(text: weatherInfo.temp)
+                        }
+                    }
+                }
+                .padding(.top)
+                
                 Spacer()
             }
         }
