@@ -10,10 +10,11 @@ struct ButtonView: View {
     let label: String
     let textColor: Color
     let backgroundColor: Color
+    let action: () -> Void
     
     var body: some View {
         Button {
-            print("clicked")
+            action();
         } label: {
             Text(label)
                 .frame(width: 280, height: 50)

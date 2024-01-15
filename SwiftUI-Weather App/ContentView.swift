@@ -14,14 +14,6 @@ private struct WeatherInfo: Identifiable {
     let temp: String
 }
 
-private let weatherArray: [WeatherInfo] = [
-    WeatherInfo(weekDay: "TUE", icon: "cloud.sun.fill", temp: "+20°C"),
-    WeatherInfo(weekDay: "WED", icon: "sun.max.fill", temp: "+25°C"),
-    WeatherInfo(weekDay: "THU", icon: "wind", temp: "+15°C"),
-    WeatherInfo(weekDay: "FRI", icon: "sunset.fill", temp: "+15°C"),
-    WeatherInfo(weekDay: "SAT", icon: "moon.stars.fill", temp: "+14°C"),
-]
-
 // Представление для иконок
 private struct WeatherIconView: View {
     let iconName: String
@@ -70,9 +62,20 @@ private struct WeatherDayView: View {
 }
 
 // Представление для фона
-private struct BackgroundView: View {
-    let topColor: Color
-    let bottomColor: Color
+struct BackgroundView: View {
+    @Binding var isNight: Bool
+    
+    init(isNight: Binding<Bool>) {
+        self._isNight = isNight
+    }
+    
+    var topColor: Color {
+        return isNight ? Color.black : Color.blue
+    }
+    
+    var bottomColor: Color {
+        return isNight ? Color.gray : Color("lightBlue")
+    }
     
     var body: some View {
         LinearGradient(gradient: Gradient(colors: [topColor, bottomColor]),
@@ -83,9 +86,27 @@ private struct BackgroundView: View {
 }
 
 struct ContentView: View {
+    @State private var isNight = false
+    
+    private let weatherArray: [WeatherInfo] = [
+        WeatherInfo(weekDay: "TUE", icon: "cloud.sun.fill", temp: "+20°C"),
+        WeatherInfo(weekDay: "WED", icon: "sun.max.fill", temp: "+25°C"),
+        WeatherInfo(weekDay: "THU", icon: "wind", temp: "+15°C"),
+        WeatherInfo(weekDay: "FRI", icon: "sunset.fill", temp: "+15°C"),
+        WeatherInfo(weekDay: "SAT", icon: "moon.stars.fill", temp: "+14°C"),
+    ]
+    
+    var topColor: Color {
+        return isNight ? Color.black : Color.blue
+    }
+    
+    var bottomColor: Color {
+        return isNight ? Color.gray : Color("lightBlue")
+    }
+    
     var body: some View {
         ZStack {
-            BackgroundView(topColor: .blue, bottomColor: Color("lightBlue"))
+            BackgroundView(isNight: $isNight)
             
             VStack {
                 TextView(text: "Cupertino, CA", fontSize: 32)
@@ -106,7 +127,9 @@ struct ContentView: View {
                 
                 ButtonView(label: "Change Day Time",
                            textColor: .blue,
-                           backgroundColor: .white)
+                           backgroundColor: .white) {
+                    isNight.toggle()
+                }
                 
                 Spacer()
             }
